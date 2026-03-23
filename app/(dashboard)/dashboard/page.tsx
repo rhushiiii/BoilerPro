@@ -1,29 +1,36 @@
 import { Activity, CreditCard, Users } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCurrentSubscription, getCurrentUserProfile, getUsageTotalForLastDays } from "@/lib/db";
 
-const metrics = [
-  {
-    title: "Active users",
-    value: "2,341",
-    description: "+18% from last month",
-    icon: Users,
-  },
-  {
-    title: "Monthly revenue",
-    value: "$18,420",
-    description: "+9% from last month",
-    icon: CreditCard,
-  },
-  {
-    title: "API requests",
-    value: "8.9M",
-    description: "99.98% success rate",
-    icon: Activity,
-  },
-];
+export default async function DashboardPage() {
+  const [profile, subscription, usageLast30Days] = await Promise.all([
+    getCurrentUserProfile(),
+    getCurrentSubscription(),
+    getUsageTotalForLastDays(30),
+  ]);
 
-export default function DashboardPage() {
+  const metrics = [
+    {
+      title: "Signed in as",
+      value: profile?.email ?? "Unknown",
+      description: profile?.full_name ?? "No name set",
+      icon: Users,
+    },
+    {
+      title: "Current plan",
+      value: subscription?.plan ?? "free",
+      description: subscription?.status ? `Status: ${subscription.status}` : "No active subscription row yet",
+      icon: CreditCard,
+    },
+    {
+      title: "Usage (30 days)",
+      value: `${usageLast30Days}`,
+      description: "Total usage_events.quantity in last 30 days",
+      icon: Activity,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div>

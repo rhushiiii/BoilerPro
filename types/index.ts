@@ -10,3 +10,5 @@ export type MetricCard = {
   value: string;
   description: string;
 };
+
+export type { Database, Inserts, Json, Tables, Updates } from "@/types/database";

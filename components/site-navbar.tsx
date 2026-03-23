@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
+import { useUser } from "@/hooks/use-user";
+import { logout } from "@/app/(auth)/actions";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +17,7 @@ const navLinks = [
 
 export function SiteNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const user = useUser();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur">
@@ -32,12 +35,22 @@ export function SiteNavbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/login">Log In</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link href="/signup">Sign Up</Link>
-          </Button>
+          {user ? (
+            <form action={logout}>
+              <Button type="submit" variant="outline" size="sm">
+                Logout
+              </Button>
+            </form>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/login">Log In</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -66,18 +79,28 @@ export function SiteNavbar() {
               {link.label}
             </Link>
           ))}
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/login" onClick={() => setIsOpen(false)}>
-                Log In
-              </Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href="/signup" onClick={() => setIsOpen(false)}>
-                Sign Up
-              </Link>
-            </Button>
-          </div>
+          {user ? (
+            <div className="mt-2">
+              <form action={logout}>
+                <Button className="w-full" variant="outline" size="sm" type="submit" onClick={() => setIsOpen(false)}>
+                  Logout
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <Button asChild variant="outline" size="sm">
+                <Link href="/login" onClick={() => setIsOpen(false)}>
+                  Log In
+                </Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/signup" onClick={() => setIsOpen(false)}>
+                  Sign Up
+                </Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </header>
