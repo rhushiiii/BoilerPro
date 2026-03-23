@@ -1,13 +1,14 @@
 import { Activity, CreditCard, Users } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCurrentSubscription, getCurrentUserProfile, getUsageTotalForLastDays } from "@/lib/db";
+import { getCurrentSubscription, getCurrentUserProfile, getDatabaseSetupStatus, getUsageTotalForLastDays } from "@/lib/db";
 
 export default async function DashboardPage() {
-  const [profile, subscription, usageLast30Days] = await Promise.all([
+  const [profile, subscription, usageLast30Days, dbStatus] = await Promise.all([
     getCurrentUserProfile(),
     getCurrentSubscription(),
     getUsageTotalForLastDays(30),
+    getDatabaseSetupStatus(),
   ]);
 
   const metrics = [
@@ -37,6 +38,17 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Dashboard</h1>
         <p className="text-muted-foreground">Your product pulse at a glance.</p>
       </div>
+
+      {!dbStatus.ready ? (
+        <Card className="border-amber-300 bg-amber-50">
+          <CardHeader>
+            <CardTitle>Database Setup Needed</CardTitle>
+            <CardDescription>
+              {dbStatus.reason} This dashboard will show placeholder values until migrations are applied.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {metrics.map((metric) => {

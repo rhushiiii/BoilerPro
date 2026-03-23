@@ -6,7 +6,11 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await ensureUserProfile();
+  try {
+    await ensureUserProfile();
+  } catch (error) {
+    console.error("Dashboard profile bootstrap failed:", error);
+  }
 
   return (
     <div className="container py-6">
